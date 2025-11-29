@@ -1,0 +1,57 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16
+    container_name: telemed_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-telemed}
+      POSTGRES_USER: ${DB_USER:-telemed}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-telemedpass}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  backend:
+    build: ./backend
+    container_name: telemed_backend
+    command: sh -c "python manage.py migrate && gunicorn --bind 0.0.0.0:8000 telemed.wsgi:application"
+    environment:
+      DJANGO_SETTINGS_MODULE: telemed.settings
+      DB_HOST: ${DB_HOST:-db}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_NAME: ${DB_NAME:-telemed}
+      DB_USER: ${DB_USER:-telemed}
+      DB_PASSWORD: ${DB_PASSWORD:-telemedpass}
+      SECRET_KEY: ${SECRET_KEY:-devsecret}
+      DEBUG: ${DEBUG:-True}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS:-*}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:3000}
+      TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID:-}
+      TWILIO_API_KEY_SID: ${TWILIO_API_KEY_SID:-}
+      TWILIO_API_KEY_SECRET: ${TWILIO_API_KEY_SECRET:-}
+      TWILIO_WHATSAPP_FROM: ${TWILIO_WHATSAPP_FROM:-}
+      WHATSAPP_PROVIDER: ${WHATSAPP_PROVIDER:-twilio}
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build: ./frontend
+    container_name: telemed_frontend
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://localhost:8000/api}
+      NEXT_PUBLIC_TWILIO_API_KEY: ${TWILIO_API_KEY_SID:-}
+      NEXT_PUBLIC_TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID:-}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+volumes:
+  db_data:
