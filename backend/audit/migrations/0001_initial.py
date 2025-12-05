@@ -1,0 +1,21 @@
+from django.db import migrations, models
+import django.db.models.deletion
+
+class Migration(migrations.Migration):
+    initial = True
+    dependencies = [('accounts', '0001_initial')]
+    operations = [
+        migrations.CreateModel(
+            name='AuditLog',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('path', models.CharField(max_length=255)),
+                ('method', models.CharField(max_length=10)),
+                ('ip_address', models.GenericIPAddressField(blank=True, null=True)),
+                ('payload', models.JSONField(blank=True, default=dict)),
+                ('created_at', models.DateTimeField(auto_now_add=True)),
+                ('user', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='accounts.user')),
+            ],
+            options={'ordering': ['-created_at']},
+        ),
+    ]

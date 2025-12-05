@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; color: #000; }
+        .header { display: flex; align-items: center; gap: 16px; border-bottom: 3px solid #0C6DFD; padding-bottom: 12px; margin-bottom: 24px; }
+        .logo { height: 60px; }
+        .title { color: #0C6DFD; font-size: 22px; font-weight: bold; text-transform: uppercase; }
+        .section { margin-bottom: 18px; }
+        .label { font-weight: bold; color: #0C6DFD; }
+        .divider { border-top: 1px solid #ccc; margin: 18px 0; }
+        .signature { text-align: center; margin-top: 32px; }
+        .signature .line { border-top: 1px solid #000; width: 260px; margin: 0 auto 6px auto; }
+        .qr { text-align: center; margin-top: 24px; }
+        .footer { margin-top: 30px; font-size: 12px; text-align: center; color: #555; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img class="logo" src="{{ logo_path }}" alt="Logo">
+        <div>
+            <div class="title">Telemed - Atestado Médico</div>
+            <div>Consulta #{{ consultation.id }}</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="label">Paciente:</div>
+        <div>{{ patient_name }} - CPF {{ cpf }}</div>
+    </div>
+    <div class="section">
+        <div class="label">Data de atendimento:</div>
+        <div>{{ data_atendimento }}</div>
+    </div>
+    <div class="section">
+        <div class="label">Dias de afastamento:</div>
+        <div>{{ dias_afastamento }} dia(s)</div>
+    </div>
+    <div class="section">
+        <div class="label">Motivo:</div>
+        <div>{{ motivo }}</div>
+    </div>
+    {% if cid %}
+    <div class="section">
+        <div class="label">CID:</div>
+        <div>{{ cid }}</div>
+    </div>
+    {% endif %}
+
+    <div class="divider"></div>
+
+    <div class="signature">
+        <div class="line"></div>
+        <div>{{ doctor_name }} - CRM {{ crm }}</div>
+        <div>Assinatura digital e carimbo</div>
+    </div>
+
+    <div class="qr">
+        <img src="{{ qr_code_path }}" alt="QR Code" width="120" height="120">
+        <div>Verificação via QR Code</div>
+    </div>
+
+    <div class="footer">
+        Documento gerado eletronicamente. Telemed • confidencial.
+    </div>
+</body>
+</html>
